@@ -14,6 +14,23 @@ hs = include('awake/lib/halfsecond')
 local CLOCK_DIVS = { 1/64, 1/32, 1/16, 1/8, 1/4, 1/2, 1, 2, 4, 8, 16, 32, 64 }
 local alt = false
 local value = math.floor(math.random() * math.pow(2, 16))
+local rings = {}
+rings[1] = 65535
+rings[2] = 43690
+rings[3] = 18724
+rings[4] = 34952
+rings[5] = 16912
+rings[6] = 2080
+rings[7] = 8256
+rings[8] = 32896
+rings[9] = 256
+rings[10] = 512
+rings[11] = 1024
+rings[12] = 2048
+rings[13] = 4096
+rings[14] = 8192
+rings[15] = 16384
+rings[16] = 32768
 
 engine.name = "PolyPerc"
 
@@ -39,9 +56,8 @@ local function loop()
       if lsb == 1 then lsb = 0 else lsb = 1 end
     end
     
-    value = (lsb << 16) | (value >> 1)
-    if lsb == 1 then value = value | (1 << (params:get("ring")-1)) end
-    if lsb == 0 then value = value & ~(1 << (params:get("ring")-1)) end
+    if lsb == 1 then value = value >> 1 |  rings[params:get("ring")] end
+    if lsb == 0 then value = value >> 1 & ~rings[params:get("ring")] end
     
     transpose = util.linlin(0, 255, -params:get("rift"), params:get("rift"), value & 255)
     note = MusicUtil.snap_note_to_array(params:get("root") + transpose, scale())
